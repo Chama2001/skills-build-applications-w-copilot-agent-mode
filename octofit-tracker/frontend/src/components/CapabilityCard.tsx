@@ -1,38 +1,18 @@
-import { useEffect, useState } from 'react';
-import { getJson } from '../api/client.js';
-
-type CapabilityTitle = 'Activities' | 'Teams' | 'Leaderboard' | 'Workout suggestions';
-type ApiItem = Record<string, unknown>;
-type Props = { title: CapabilityTitle; description: string };
-
-const capabilities: Record<CapabilityTitle, { path: string; collection: string; emptyMessage: string }> = {
-  Activities: {
-    path: '/api/activities',
-    collection: 'activities',
-    emptyMessage: 'No activities yet.',
-  },
-  Teams: {
-    path: '/api/teams',
-    collection: 'teams',
-    emptyMessage: 'No teams yet.',
-  },
-  Leaderboard: {
-    path: '/api/leaderboard',
-    collection: 'leaderboard',
-    emptyMessage: 'No leaderboard scores yet.',
-  },
-  'Workout suggestions': {
-    path: `/api/workouts/suggestions/${encodeURIComponent('mona@example.com')}`,
-    collection: 'suggestions',
-    emptyMessage: 'No workout suggestions yet.',
-  },
+export type CapabilityTitle = 'Activities' | 'Teams' | 'Leaderboard' | 'Workout suggestions';
+export type ApiItem = Record<string, unknown>;
+type Props = {
+  title: CapabilityTitle;
+  description: string;
+  emptyMessage: string;
+  items: ApiItem[] | null;
+  error: string | null;
 };
 
 function isRecord(value: unknown): value is ApiItem {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function parseItems(response: unknown, collection: string): ApiItem[] {
+export function parseItems(response: unknown, collection: string): ApiItem[] {
   if (!isRecord(response) || !Array.isArray(response[collection]) || !response[collection].every(isRecord)) {
     throw new Error('The server returned an invalid response.');
   }
@@ -69,28 +49,7 @@ function describeItem(title: CapabilityTitle, item: ApiItem): string {
   ].filter(Boolean).join(' · ');
 }
 
-export function CapabilityCard({ title, description }: Props) {
-  const [items, setItems] = useState<ApiItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const capability = capabilities[title];
-
-  useEffect(() => {
-    let active = true;
-    setItems(null);
-    setError(null);
-    getJson<unknown>(capability.path)
-      .then((response) => {
-        if (active) setItems(parseItems(response, capability.collection));
-      })
-      .catch((reason: unknown) => {
-        if (!active) return;
-        setError(reason instanceof Error ? reason.message : 'Unable to load data. Please try again.');
-      });
-    return () => {
-      active = false;
-    };
-  }, [capability]);
-
+export function CapabilityCard({ title, description, emptyMessage, items, error }: Props) {
   return (
     <section className="card h-100">
       <div className="card-body">
@@ -101,7 +60,7 @@ export function CapabilityCard({ title, description }: Props) {
         ) : items === null ? (
           <p role="status">Loading {title.toLowerCase()}…</p>
         ) : items.length === 0 ? (
-          <p>{capability.emptyMessage}</p>
+          <p>{emptyMessage}</p>
         ) : (
           <ul>
             {items.map((item, index) => (

@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Express Backend",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/octofit-tracker/backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "env": {
+        "PORT": "8000"
+      }
+    },
+    {
+      "name": "Launch Vite Frontend",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/octofit-tracker/frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--host",
+        "0.0.0.0"
+      ],
+      "env": {
+        "VITE_CODESPACE_NAME": "${env:CODESPACE_NAME}"
+      }
+    }
+  ]
+}

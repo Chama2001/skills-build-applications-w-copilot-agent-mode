@@ -1,0 +1,13 @@
+👋 Welcome to building a modern multi-tier application with GitHub Copilot agent mode!
+
+You will build OctoFit Tracker using:
+- Presentation tier: React 19
+- Logic tier: Node.js + Express + TypeScript
+- Data tier: MongoDB
+
+Ports used in this exercise:
+- 5173 (private, Vite proxies /api to the API)
+- 8000 (private, unauthenticated API)
+- 27017 (private)
+
+📃 GitHub Copilot documentation: https://docs.github.com/en/copilot
